@@ -16,9 +16,9 @@ def admin_login():
             password = form.password.data
             admin = Admin.query.filter_by(nickname=nickname).first()
             if admin and check_password_hash(admin.password, password):
-                return '登陆成功'
+                return 'login success'
             else:
-                return '登录失败'
+                return 'login failed'
         else:
             return jsonify(form.errors)
     else:
@@ -31,7 +31,7 @@ def admin_register():
         form = RegisterForm(request.form)
         if form.validate():
             if Admin.query.filter_by(nickname=form.nickname.data).first():
-                return '已存在'
+                return 'admin success'
             else:
                 admin = Admin()
                 admin.set_attrs(form.data)

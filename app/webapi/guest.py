@@ -1,12 +1,12 @@
 from flask import request, jsonify
 from flask_login import login_required
-from sqlalchemy import func
 
 from app import db
 from . import web
 from app.forms.guest import GuestAddForm, GuestSelectForm
 from app.models.models import Guest
 from app.view_models.guest import get_guest_json, get_guests_by_form
+from app.webapi import admin_required
 
 
 @web.route('/guest/add/', methods=['GET', 'POST'])
@@ -31,6 +31,7 @@ def guest_add():
 
 @web.route('/guest/del/<int:id>/')
 @login_required
+@admin_required
 def guest_del(id):
     guest = db.session.query(Guest).filter_by(id=id).first_or_404()
     if guest:
@@ -43,6 +44,7 @@ def guest_del(id):
 
 @web.route('/guest/upd/<int:id>/', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def guest_upd(id):
     if request.method == 'POST':
         form = GuestAddForm(request.form)
@@ -61,6 +63,7 @@ def guest_upd(id):
 
 @web.route('/guest/show/<int:id>/')
 @login_required
+@admin_required
 def show_guest_by_id(id):
     guest = db.session.query(Guest).filter_by(id=id).first()
     return jsonify(get_guest_json(guest))
@@ -68,6 +71,7 @@ def show_guest_by_id(id):
 
 @web.route('/guest/show/', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def show_guest_by_name_tel_com():
     if request.method == 'POST':
         form = GuestSelectForm(request.form)
@@ -78,6 +82,7 @@ def show_guest_by_name_tel_com():
 
 @web.route('/guest/show/all/')
 @login_required
+@admin_required
 def show_all_guests():
     guests = db.session.query(Guest).all()
     guests = [get_guest_json(guest) for guest in guests]

@@ -7,13 +7,12 @@ from .base import Base, db
 login_manager = LoginManager()
 
 
-class Admin(Base):
+class Seller(Base, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     realname = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(20))
     nickname = db.Column(db.String(50), nullable=False, unique=True)
     _password = db.Column('password', db.String(128))
-    is_super = db.Column(db.SmallInteger, default=0)
 
     @property
     def password(self):
@@ -24,12 +23,16 @@ class Admin(Base):
         self._password = generate_password_hash(raw)
 
 
-class Seller(Base, UserMixin):
+class Admin(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     realname = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(20))
     nickname = db.Column(db.String(50), nullable=False, unique=True)
     _password = db.Column('password', db.String(128))
+    is_super = db.Column(db.SmallInteger, default=0)
+    seller_id = db.Column(db.Integer, db.ForeignKey('seller.id'))
+
+    seller = db.relationship('Seller', backref='admin')
 
     @property
     def password(self):

@@ -7,6 +7,7 @@ from sqlalchemy import func, desc, extract
 from . import web
 from app.forms.order import OrderAddForm, OrderUpdateForm, OrdersFromDate
 from app.models.models import Orders
+from app.webapi import admin_required
 from app import db
 from app.view_models.order import get_order_json, day_to_date, get_ranking_json, get_start_end_date
 
@@ -25,7 +26,7 @@ def order_add():
             order.seller_id = seller_id
             db.session.add(order)
             db.session.commit()
-            return '已添加'
+            return 'add success'
         else:
             return jsonify(form.errors)
     else:
@@ -34,6 +35,7 @@ def order_add():
 
 @web.route('/order/upd/<int:order_id>/', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def order_upd(order_id):
     if request.method == 'POST':
         form = OrderUpdateForm(request.form)
@@ -41,7 +43,7 @@ def order_upd(order_id):
             order = db.session.query(Orders).filter_by(id=order_id).first()
             order.set_attrs(form.data)
             db.session.commit()
-            return '修改成功'
+            return 'update success'
         else:
             return jsonify(form.errors)
     else:
@@ -50,16 +52,18 @@ def order_upd(order_id):
 
 @web.route('/order/del/<int:order_id>/')
 @login_required
+@admin_required
 def order_del(order_id):
     if request.method == 'GET':
         db.session.query(Orders).filter(Orders.id==order_id).delete()
         # db.session.delete(order)
         db.session.commit()
-        return '已删除'
+        return 'remove success'
 
 
 @web.route('/order/show/<int:order_id>/')
 @login_required
+@admin_required
 def order_select(order_id):
     order = Orders.query.filter_by(id=order_id).first_or_404()
     return get_order_json(order)
@@ -67,6 +71,7 @@ def order_select(order_id):
 
 @web.route('/orders/ranking/week/<int:week>/')
 @login_required
+@admin_required
 def orders_week(week):
     if week > 0:
         # startdate = str_to_date(current_app.config['START_DATE'])
@@ -82,6 +87,7 @@ def orders_week(week):
 
 @web.route('/orders/ranking/month/<int:month>/')
 @login_required
+@admin_required
 def orders_month(month):
     if 0 < month <= 12:
         # startdate = str_to_date(current_app.config['START_DATE'])
@@ -95,6 +101,7 @@ def orders_month(month):
 
 @web.route('/orders/ranking/year/<int:year>/')
 @login_required
+@admin_required
 def orders_year(year):
     if year > 0:
         # startdate = str_to_date(current_app.config['START_DATE'])
@@ -109,6 +116,7 @@ def orders_year(year):
 
 @web.route('/orders/ranking/', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def orders_dates():
     if request.method == 'POST':
         form = OrdersFromDate(request.form)

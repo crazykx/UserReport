@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config.from_pyfile('secure.cfg')
 app.config.from_pyfile('setting.cfg')
 
-app.register_blueprint(web, url_prefix='/v{}/'.format(app.config['VERSION']))
+app.register_blueprint(web, url_prefix='/api/v{}/'.format(app.config['VERSION']))
 
 db.init_app(app=app)
 
